@@ -45,5 +45,15 @@ The following tasks were completed:
 - Performed grouped aggregation.
 - Saved the cleaned dataset as `cleaned_data.csv`.
 
+## Key Findings
+
+- Most hotel bookings were not cancelled.
+- City Hotels had more bookings than Resort Hotels.
+- Customers with longer lead times were more likely to cancel their bookings.
+- Most bookings were made without a deposit.
+- Online TA was the largest market segment.
+- The hotel dataset contained some outliers, but they were kept for model training in the next part.
+- The cleaned dataset was saved as `cleaned_data.csv` for use in Part 2 and Part 3.
+
 
 
