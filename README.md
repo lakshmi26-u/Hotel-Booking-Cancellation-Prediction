@@ -55,5 +55,25 @@ The following tasks were completed:
 - The hotel dataset contained some outliers, but they were kept for model training in the next part.
 - The cleaned dataset was saved as `cleaned_data.csv` for use in Part 2 and Part 3.
 
+## Technologies Used
+
+- Python
+- Google Colab
+- Pandas
+- NumPy
+- Matplotlib
+- Seaborn
+- Scikit-learn
+
+## Project Files
+
+- Part_1_Hotel_Booking_Data_Cleaning_and_EDA.ipynb
+- cleaned_data.csv
+- README.md
+
+## Part 1 Conclusion
+
+In Part 1, I cleaned and explored the hotel booking dataset before building any machine learning models. I handled missing values, removed duplicates, corrected data types, detected outliers, and created different visualizations to understand the data. The cleaned dataset was saved as `cleaned_data.csv`, which will be used in Part 2 and Part 3.
+
 
 
