@@ -3,8 +3,7 @@
 ## Project Overview
 
 This project was completed as part of the Applied AI & ML Essentials Capstone Project.
-
-The aim of this project is to predict whether a hotel booking will be cancelled or not using Machine Learning techniques. The project is divided into four parts that cover the complete AI and Machine Learning lifecycle.
+The aim of this project is to build a machine learning model that predicts whether a hotel booking will be cancelled or not. The project follows the complete AI and Machine Learning lifecycle from data cleaning to model development and LLM integration.
 
 ### Project Parts
 
@@ -74,6 +73,7 @@ The following tasks were completed:
 ## Part 1 Conclusion
 
 In Part 1, I cleaned and explored the hotel booking dataset before building any machine learning models. I handled missing values, removed duplicates, corrected data types, detected outliers, and created different visualizations to understand the data. The cleaned dataset was saved as `cleaned_data.csv`, which will be used in Part 2 and Part 3.
+The remaining parts of this project will focus on building machine learning models, improving model performance, and developing an AI chatbot that predicts hotel booking cancellations using the trained model.
 
 
 
