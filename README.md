@@ -298,3 +298,273 @@ The results show that the baseline Logistic Regression model (C = 1.0) provided 
 
 Completed Part 2 - Supervised Machine Learning
 
+**PART 3**(Part A)
+Advanced Modeling – Ensembles, Tuning and Full ML Pipeline
+**Project Objective**
+
+The objective of this part of the project is to compare different machine learning models and identify which model performs best for predicting hotel booking cancellation. Instead of depending on a single model, multiple ensemble models were trained and evaluated. Hyperparameter tuning and machine learning pipelines were also used to improve the model performance. Finally, the best model was saved so that it can be reused without retraining.
+
+**Dataset**
+
+The same cleaned_data.csv created in Part 1 and used in Part 2 was used for this part.
+
+**Target Variable**
+
+is_canceled
+
+**Features**
+
+All remaining columns except the target variable.
+
+**Data Preparation**
+
+The same preprocessing steps from Part 2 were reused.
+
+Loaded the cleaned dataset.
+Selected the feature matrix (X).
+Selected the target variable (y).
+Performed train-test split using 80% training and 20% testing data.
+Applied StandardScaler using only the training data to avoid data leakage.
+1. Decision Tree (Baseline Model)
+
+A Decision Tree Classifier was first trained using the default parameters without restricting the tree depth.
+
+Results:
+
+Training Accuracy: 0.9969
+Testing Accuracy: 0.8020
+
+Interpretation:
+
+The training accuracy is almost 100%, while the testing accuracy is much lower.
+This shows that the Decision Tree has overfitted the training data.
+
+Decision Trees are called high variance models because they keep creating branches until they almost memorize the training data. Small changes in the data can produce a completely different tree.
+
+2. Controlled Decision Tree:
+To reduce overfitting, another Decision Tree was trained using
+
+max_depth = 5
+min_samples_split = 20
+Results:
+Training Accuracy: 0.7917
+Testing Accuracy: 0.7896
+
+Interpretation:
+The controlled tree has almost the same training and testing accuracy.
+This means the model is more stable and generalizes better to unseen data.
+Although the accuracy is slightly lower than the baseline model, it is less likely to overfit.
+Why max_depth?
+
+The max_depth parameter limits how deep the tree can grow. A smaller depth reduces overfitting but may slightly reduce accuracy.
+
+Why min_samples_split?
+
+The min_samples_split parameter prevents the model from creating unnecessary splits when very few samples are available. This helps the model ignore small noisy patterns in the data.
+
+3. Gini vs Entropy Comparison
+
+Two controlled Decision Tree models were trained using different splitting criteria.
+
+**Results**
+Criterion	Test Accuracy
+Gini	0.7896
+Entropy	0.7879
+Both methods produced very similar results.
+The Gini model performed slightly better on this dataset.
+
+**Gini Formula**
+
+Gini = 1 − Σ(pi²)
+where pi represents the probability of each class.
+When Gini = 0, all samples in the node belong to only one class. This means the node is completely pure.
+
+**Entropy Formula**
+
+Entropy = − Σ(pi log₂(pi))
+
+Entropy measures the amount of uncertainty in a node.
+Lower entropy means the samples belong mostly to one class, while higher entropy means the classes are more mixed.
+
+**Conclusion**
+
+The baseline Decision Tree achieved very high training accuracy but showed clear signs of overfitting.
+The controlled Decision Tree reduced overfitting and produced more balanced results.
+Among the two splitting criteria, Gini performed slightly better than Entropy, although the difference was very small.
+
+**Random Forest Classifier**
+
+A Random Forest Classifier was trained using the following parameters:
+n_estimators = 100
+max_depth = 10
+random_state = 42
+Random Forest is an ensemble model that combines multiple decision trees to improve prediction performance.
+
+**Results**
+Training Accuracy: 0.7600
+Testing Accuracy: 0.7619
+ROC-AUC Score: 0.8701
+
+**Interpretation**
+The Random Forest model performed better than the Decision Tree in terms of ROC-AUC score. Since it combines many decision trees, it reduces overfitting and gives more reliable predictions on new data.
+
+Top 5 Important Features
+Feature	Importance Score
+lead_time	0.127302
+market_segment_Online TA	0.084337
+country_PRT	0.083078
+required_car_parking_spaces	0.078145
+agent	0.074222
+Interpretation:
+These are the top 5 important features used by the Random Forest model. The lead_time feature has the highest importance, which means it has the biggest impact on predicting hotel booking cancellations.
+
+**How Random Forest Calculates Feature Importance**
+
+Random Forest calculates feature importance by checking how much each feature helps reduce Gini impurity while building the trees.
+This is different from Linear Regression. Linear Regression uses coefficients to show the relationship between a feature and the target, while Random Forest shows how useful each feature is for making decisions.
+
+**Bagging Concept**
+Random Forest uses a method called Bagging (Bootstrap Aggregating).
+Each decision tree is trained using a random sample of the training data with replacement. At each split, the model also selects a random set of features. Finally, the predictions from all trees are combined.
+This helps reduce overfitting and improves the overall model performance.
+
+5. Gradient Boosting Classifier
+
+A Gradient Boosting Classifier was trained using:
+n_estimators = 100
+learning_rate = 0.1
+max_depth = 3
+random_state = 42
+Gradient Boosting builds trees one by one. Each new tree tries to correct the mistakes made by the previous tree.
+
+**Results**
+Training Accuracy: 0.8289
+Testing Accuracy: 0.8278
+ROC-AUC Score: 0.8842
+
+**Interpretation**
+
+Gradient Boosting achieved the highest ROC-AUC score among the models trained in this part. It performed better than the Decision Tree and Random Forest on this dataset.
+
+6. Feature Ablation Study
+
+The five least important features identified from the Random Forest model are:
+
+country_PLW
+country_IMN
+country_CYM
+country_CUB
+country_DMA
+
+These features had an importance score of 0.0.
+
+Results:
+Original Random Forest AUC: 0.8701
+Reduced Random Forest AUC: 0.8687
+Interpretation:
+After removing the five least important features, the ROC-AUC score decreased only slightly.
+This shows that these features had very little effect on the model. Removing such features can make the model simpler without affecting the performance too much.
+
+**Conclusion**
+
+Random Forest performed better than the Decision Tree. Gradient Boosting gave the best ROC-AUC score in this part. The Feature Ablation study also showed that removing a few unimportant features had only a small impact on the model performance.
+
+**Cross Validation**
+
+To compare the models fairly, 5-fold cross-validation was performed using StratifiedKFold with ROC-AUC as the evaluation metric.
+
+**Results**
+Model	Mean AUC	Standard Deviation
+Logistic Regression	0.843634	0.003579
+Controlled Decision Tree	0.831863	0.005546
+Random Forest	0.867765	0.003513
+Gradient Boosting	0.886037	0.003045
+**Interpretation**
+
+Gradient Boosting achieved the highest mean ROC-AUC score. It also had a low standard deviation, showing that the model performed consistently across all folds.
+Cross-validation gives a better estimate of model performance because every sample is used for both training and testing. This makes the evaluation more reliable than using only one train-test split.
+**Hyperparameter Tuning using GridSearchCV**
+
+GridSearchCV was used to find the best Random Forest model by testing different combinations of hyperparameters.
+
+The following pipeline was used:
+
+SimpleImputer (median strategy)
+StandardScaler
+RandomForestClassifier
+Best Parameters
+max_depth = None
+min_samples_leaf = 1
+n_estimators = 200
+Best Cross Validation AUC
+0.906324
+Total Model Configurations
+
+The parameter grid contains:
+n_estimators = 3 values
+max_depth = 3 values
+min_samples_leaf = 2 values
+Total combinations = 3 × 3 × 2 = 18
+Since 5-fold cross-validation was used:
+18 × 5 = 90 model trainings
+
+**Interpretation**
+
+GridSearchCV automatically tested different parameter combinations and selected the model with the highest ROC-AUC score.
+Grid Search checks every possible combination, so it usually gives the best result but takes more time. Randomized Search is faster because it tests only a few random combinations.
+
+**Manual Learning Curve**
+
+The best pipeline was trained using different amounts of training data to see how the model performance changes.
+
+**Results**
+Training Data	Training AUC	Test AUC
+20%	0.999999	0.888648
+40%	0.999987	0.898413
+60%	0.999971	0.903819
+80%	0.999962	0.905471
+100%	0.999948	0.906986
+**Interpretation**
+The training AUC decreased slightly as more training data was added. This is normal because the model is trained on more diverse data.
+The test AUC increased steadily with more training data. This shows that the model benefits from having more data.
+Since the test AUC was still improving at 100% of the training data, the model appears to be data-limited. Collecting more data may improve its performance further.
+**Model Serialization**
+The best pipeline was saved using the joblib library.
+joblib.dump(best_pipeline, "best_model.pkl")
+The saved model can be loaded later without training it again.
+The model was successfully loaded using joblib.load() and predictions were made on two sample test rows.
+The prediction code executed successfully without any errors.
+**Note**
+The generated best_model.pkl file is approximately 481 MB, which is larger than GitHub's 100 MB file limit.
+Therefore, the notebook includes the code required to regenerate the model instead of uploading the model file to the repository.
+
+**Summary Comparison of Models**
+
+| Model                    | 5-Fold CV Mean AUC | 5-Fold CV Std AUC |  Test AUC |
+| ------------------------ | -----------------: | ----------------: | --------: |
+| Logistic Regression      |           0.843634 |          0.003579 |  0.839012 |
+| Controlled Decision Tree |           0.831863 |          0.005546 | 0.831863* |
+| Random Forest            |           0.867765 |          0.003513 |  0.870103 |
+| Gradient Boosting        |           0.886037 |          0.003045 |  0.884182 |
+
+
+**Recommended Model**
+
+Based on the results, Gradient Boosting is the best model for this project.
+It achieved the highest ROC-AUC score and also performed consistently during cross-validation. The model was able to predict hotel booking cancellations more accurately than the other models.
+Therefore, Gradient Boosting is recommended for this project.
+
+**Overall Conclusion**
+
+In this part of the project, different machine learning models were trained and compared.
+A Decision Tree, Controlled Decision Tree, Random Forest, and Gradient Boosting model were built and evaluated. Cross-validation and GridSearchCV were also used to compare the models and improve performance.
+The Feature Ablation study showed that removing a few unimportant features had only a small effect on the model performance.
+The best model was saved using joblib, and it was successfully loaded again to make predictions.
+Overall, the project showed that Gradient Boosting gave the best performance for predicting hotel booking cancellations.
+
+**Repository Note**
+
+The best_model.pkl file is approximately 481 MB, which is larger than GitHub's 100 MB upload limit.
+Therefore, the repository includes the notebook containing the code required to regenerate the model instead of uploading the model file.
+
+
