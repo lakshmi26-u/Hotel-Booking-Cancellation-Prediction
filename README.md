@@ -564,13 +564,9 @@ Overall, the project showed that Gradient Boosting gave the best performance for
 
 **Repository Note**
 
-The best_model.pkl file is approximately 481 MB, which is larger than GitHub's 100 MB upload limit.
-Therefore, the repository includes the notebook containing the code required to regenerate the model instead of uploading the model file.
+Since best_model.pkl is approximately 481 MB, it exceeds GitHub's file upload limit. Therefore, the repository contains the complete Part 3 notebook, which can be used to regenerate the model before running Part 4.
 
 # Part 4 – LLM-Powered Feature
-
-## Chosen Track
-
 **Track C – Model Prediction Explanation Pipeline**
 
 In this part, I used the best machine learning model from Part 3 and combined it with a Large Language Model (LLM). The model predicts whether a hotel booking is likely to be canceled or not. Then the LLM explains the prediction in simple and structured JSON format. The output is validated using a JSON schema, and a PII guardrail is used before every LLM request.
@@ -582,6 +578,7 @@ I used the OpenRouter API to connect to a Large Language Model (LLM). The API ke
 I created a reusable function called `call_llm()` to send prompts to the LLM and receive responses. The function sends the system prompt and user prompt, checks whether the request is successful, and returns the model response.
 
 I also tested the API connection using a simple prompt that asked the model to reply with only the word **"hello"**. The response was received successfully, confirming that the API connection was working correctly.
+Model Used: OpenRouter API with GPT-4.1 Mini.
 
 ## Prompt Design
 
@@ -644,6 +641,7 @@ I created a JSON schema with five required fields:
 * top_reason
 * second_reason
 * next_step
+* The schema contains five required fields:prediction_label,confidence_level,top_reason,second_reason,next_step.
 
 After receiving the response from the LLM, I converted it into JSON using `json.loads()`. Then I validated the output using `jsonschema.validate()`. If the response was not valid JSON or did not match the schema, the program handled the error using `try-except` and returned a fallback value.
 
