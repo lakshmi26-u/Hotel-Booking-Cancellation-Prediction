@@ -567,4 +567,109 @@ Overall, the project showed that Gradient Boosting gave the best performance for
 The best_model.pkl file is approximately 481 MB, which is larger than GitHub's 100 MB upload limit.
 Therefore, the repository includes the notebook containing the code required to regenerate the model instead of uploading the model file.
 
+# Part 4 – LLM-Powered Feature
 
+## Chosen Track
+
+**Track C – Model Prediction Explanation Pipeline**
+
+In this part, I used the best machine learning model from Part 3 and combined it with a Large Language Model (LLM). The model predicts whether a hotel booking is likely to be canceled or not. Then the LLM explains the prediction in simple and structured JSON format. The output is validated using a JSON schema, and a PII guardrail is used before every LLM request.
+
+## LLM API Connection
+
+I used the OpenRouter API to connect to a Large Language Model (LLM). The API key was stored securely using an environment variable and was not hardcoded in the notebook.
+
+I created a reusable function called `call_llm()` to send prompts to the LLM and receive responses. The function sends the system prompt and user prompt, checks whether the request is successful, and returns the model response.
+
+I also tested the API connection using a simple prompt that asked the model to reply with only the word **"hello"**. The response was received successfully, confirming that the API connection was working correctly.
+
+## Prompt Design
+
+### System Prompt
+
+```text
+You are an AI assistant that explains hotel booking cancellation predictions.
+Return ONLY valid JSON.
+Do not include markdown or extra text.
+
+The JSON must contain:
+- prediction_label
+- confidence_level
+- top_reason
+- second_reason
+- next_step
+```
+
+### User Prompt Template
+
+```text
+Hotel Booking Features:
+
+{feature_values}
+
+Prediction:
+{predicted_class}
+
+Prediction Probability:
+{predicted_probability}
+
+Explain this prediction.
+
+Return ONLY valid JSON in this format:
+
+{
+  "prediction_label":"",
+  "confidence_level":"",
+  "top_reason":"",
+  "second_reason":"",
+  "next_step":""
+}
+```
+
+I used **temperature = 0** because I wanted the model to produce consistent and predictable JSON output. This is useful for structured responses and makes the output easier to validate.
+
+## Temperature Comparison
+
+| Input | Output at Temperature = 0 | Output at Temperature = 0.7 | Key Difference |
+|--------|---------------------------|-----------------------------|----------------|
+| Hotel Booking Prediction | The explanation was simple, consistent, and focused on the prediction result. | The explanation used different wording and included a few more details while keeping the same prediction. | Temperature 0 produced a more consistent response, while Temperature 0.7 generated a slightly more varied explanation. |
+
+I tested the same input using two different temperature values. When I used **temperature = 0**, the model produced a consistent and predictable response. When I used **temperature = 0.7**, the model generated the same prediction but used different wording and added some extra details. This shows that a lower temperature is better for structured tasks because it gives more consistent outputs.
+## Structured Output Validation
+
+I created a JSON schema with five required fields:
+
+* prediction_label
+* confidence_level
+* top_reason
+* second_reason
+* next_step
+
+After receiving the response from the LLM, I converted it into JSON using `json.loads()`. Then I validated the output using `jsonschema.validate()`. If the response was not valid JSON or did not match the schema, the program handled the error using `try-except` and returned a fallback value.
+
+All three test inputs passed the JSON validation successfully.
+## PII Guardrail
+
+Before sending any request to the LLM, I checked the user input for Personally Identifiable Information (PII) using regular expressions. The program checks for email addresses and phone numbers.
+
+If PII is detected, the request is blocked and the message **"Input blocked: PII detected."** is displayed. If no PII is found, the request is sent to the LLM.
+
+I tested the guardrail with two inputs:
+
+* An input containing an email address was blocked.
+* A normal input without PII was allowed and processed successfully.
+
+## End-to-End Demonstration
+
+| Input    | Prediction   | JSON Validation | Guardrail |
+| -------- | ------------ | --------------- | --------- |
+| Record 1 | Not Canceled | Passed          | Allowed   |
+| Record 2 | Not Canceled | Passed          | Allowed   |
+| Record 3 | Not Canceled | Passed          | Allowed   |
+
+The complete pipeline was tested on three different hotel booking records. For each record, the machine learning model predicted the booking status, and the LLM generated a structured JSON explanation. All three responses passed JSON validation successfully, and no PII was detected in the inputs.
+
+## Conclusion
+
+In this part of the project, I successfully integrated a Large Language Model (LLM) with the machine learning model developed in Part 3. The model prediction was explained using structured JSON output, and all responses were validated using a JSON schema. I also implemented a PII guardrail to block sensitive information before sending requests to the LLM. Finally, I compared the outputs using two different temperature values and observed that **temperature = 0** produced more consistent responses for structured tasks.
+ 
